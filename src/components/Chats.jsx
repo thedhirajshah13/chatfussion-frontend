@@ -29,7 +29,7 @@ const Chats = ({ chatUserDetails }) => {
 
     async function getConversation() {
       try {
-        const url = `http://localhost:8000/${chatUserId}`;
+        const url = `https://chatfussion-backend.onrender.com/${chatUserId}`;
         const response = await axios.get(url, {
           method: "GET",
           withCredentials: true,
@@ -78,7 +78,7 @@ const Chats = ({ chatUserDetails }) => {
     if (media) formData.append("media", media);
 
     try {
-      const url = `http://localhost:8000/sendmessage/${chatUserId}`;
+      const url = `https://chatfussion-backend.onrender.com/sendmessage/${chatUserId}`;
       const response = await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,

@@ -17,7 +17,7 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const url = "http://localhost:8000/auth/login";
+      const url = "https://chatfussion-backend.onrender.com/auth/login";
       const response = await axios.post(url, JSON.stringify(login), {
         headers: {
           "Content-Type": "application/json",

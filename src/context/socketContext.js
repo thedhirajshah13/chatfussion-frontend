@@ -17,7 +17,7 @@ export const SocketContextProvider = ({ children }) => {
     if (auth) {
       console.log("Auth found:", auth);  // Debugging log for auth
 
-      const newSocket = io("http://localhost:8000", {
+      const newSocket = io("https://chatfussion-backend.onrender.com", {
         query: {
           userId: auth.id,
         },

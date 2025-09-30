@@ -43,7 +43,7 @@ const Dashboard = () => {
   // Handle save
   const handleSaveProfile = async () => {
     try {
-      await axios.put(`http://localhost:8000/auth/updateUserDetails/${userProfileDetails._id}`, editProfile, { withCredentials: true });
+      await axios.put(`https://chatfussion-backend.onrender.com/auth/updateUserDetails/${userProfileDetails._id}`, editProfile, { withCredentials: true });
       setUserProfileDetails({ ...editProfile });
       setEditMode(false);
       success("Profile updated!");
@@ -67,7 +67,7 @@ const Dashboard = () => {
   const searchUser = async () => {
     if (!searchQuery.trim()) return;
     try {
-      const url = `http://localhost:8000/search/user?username=${searchQuery}`;
+      const url = `https://chatfussion-backend.onrender.com/search/user?username=${searchQuery}`;
       const { data } = await axios.get(url, { withCredentials: true });
       setSearchResult(data);
     } catch {
@@ -80,7 +80,7 @@ const Dashboard = () => {
     const fetchUsers = async () => {
       try {
         setUserLoading(true);
-        const { data } = await axios.get("http://localhost:8000/user/all", {
+        const { data } = await axios.get("https://chatfussion-backend.onrender.com/user/all", {
           withCredentials: true,
         });
         setUsers(data.user);
@@ -97,7 +97,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const { data } = await axios.post(
-        "http://localhost:8000/auth/logout",
+        "https://chatfussion-backend.onrender.com/auth/logout",
         {},
         { withCredentials: true }
       );
@@ -114,7 +114,7 @@ const Dashboard = () => {
   const handleUserProfile = async (id) => {
     try {
       const userProfile = await axios.get(
-        `http://localhost:8000/auth/getUserDetails/${id}`,
+        `https://chatfussion-backend.onrender.com/auth/getUserDetails/${id}`,
         { withCredentials: true }
       );
       setUserProfileDetails(userProfile.data.user);

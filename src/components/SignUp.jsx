@@ -29,7 +29,7 @@ const SignUp = () => {
     try {
       setloading(true);
       const response = await axios.post(
-        "http://localhost:8000/auth/signup",
+        "https://chatfussion-backend.onrender.com/auth/signup",
         form,
         {
           method: "POST",
