@@ -43,7 +43,7 @@ const Dashboard = () => {
   // Handle save
   const handleSaveProfile = async () => {
     try {
-      await axios.put(`https://chatfussion-backend.onrender.com/auth/updateUserDetails/${userProfileDetails._id}`, editProfile, { withCredentials: true });
+      await axios.patch(`https://chatfussion-backend.onrender.com/auth/updateProfile`, editProfile, { withCredentials: true });
       setUserProfileDetails({ ...editProfile });
       setEditMode(false);
       success("Profile updated!");
