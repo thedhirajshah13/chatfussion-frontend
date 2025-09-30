@@ -98,7 +98,7 @@ const Dashboard = () => {
       setLoading(true);
       const { data } = await axios.post(
         "https://chatfussion-backend.onrender.com/auth/logout",
-        {},
+       
         { withCredentials: true }
       );
       success(data.msg);
