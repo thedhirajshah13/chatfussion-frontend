@@ -21,6 +21,13 @@ const Dashboard = () => {
   const [userLoading, setUserLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [chatUser, setChatUser] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  // Responsive handler
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [searchQuery, setSearchQuery] = useState("");
   const [isProfileDetailsOpen, setIsProfileDetailsOpen] = useState(false);
   const [userProfileDetails, setUserProfileDetails] = useState(null);
@@ -62,6 +69,11 @@ const Dashboard = () => {
     setChatUser(true);
     setChatUserDetails({ chatUserId, profile, name });
     setSearchResult(null);
+  };
+
+  // Back to sidebar on mobile
+  const handleBackToSidebar = () => {
+    setChatUser(false);
   };
 
   const searchUser = async () => {
@@ -136,7 +148,10 @@ const Dashboard = () => {
       }}
     >
       {/* Left Sidebar */}
-      <div className="w-[30%] flex flex-col justify-between h-[90vh] ml-[2%] rounded-xl border-2 border-gray-800 bg-black/30 backdrop-blur-md shadow-lg p-4 font-sans">
+      <div
+        className={`w-[30%] flex flex-col justify-between h-[90vh] ml-[2%] rounded-xl border-2 border-gray-800 bg-black/30 backdrop-blur-md shadow-lg p-4 font-sans
+        ${isMobile ? (chatUser ? 'hidden' : 'flex w-full ml-0 h-full p-2') : ''}`}
+      >
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2
@@ -403,9 +418,26 @@ const Dashboard = () => {
         </div>
       )}
       {/* Right Chat Column */}
-      <div className="w-[68%] rounded-xl border-2 border-gray-800 bg-black/30 backdrop-blur-md shadow-lg h-[90vh] mr-[2%] flex flex-col">
+      <div
+        className={`w-[68%] rounded-xl border-2 border-gray-800 bg-black/30 backdrop-blur-md shadow-lg h-[90vh] mr-[2%] flex flex-col
+        ${isMobile ? (chatUser ? 'flex w-full mr-0 h-full p-2' : 'hidden') : ''}`}
+      >
         {chatUser ? (
-          <Chats chatUserDetails={chatUserDetails} />
+          <>
+            {/* Back button for mobile */}
+            {isMobile && (
+              <button
+                className="mb-2 flex items-center gap-2 text-cyan-500 hover:text-cyan-700 font-semibold"
+                onClick={handleBackToSidebar}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+                Back
+              </button>
+            )}
+            <Chats chatUserDetails={chatUserDetails} />
+          </>
         ) : (
           <div className="flex justify-center items-center h-full text-white font-bold text-3xl">
             CHATFUSSION
