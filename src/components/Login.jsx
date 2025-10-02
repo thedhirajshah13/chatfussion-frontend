@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuthContext } from "../context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import { success, errors } from "../utils/tostify";
+import {url} from '../utils/api'
 
 const Login = () => {
   const { setAuth } = useAuthContext();
@@ -17,8 +18,8 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const url = "https://chatfussion-backend.onrender.com/auth/login";
-      const response = await axios.post(url, JSON.stringify(login), {
+      const urls = `${url}/auth/login`;
+      const response = await axios.post(urls, JSON.stringify(login), {
         headers: {
           "Content-Type": "application/json",
         },

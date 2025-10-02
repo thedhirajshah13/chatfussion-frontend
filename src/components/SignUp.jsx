@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import { success, errors } from "../utils/tostify";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
+import {url} from '../utils/api'
 
 const SignUp = () => {
   const { setAuth } = useAuthContext();
@@ -29,7 +30,7 @@ const SignUp = () => {
     try {
       setloading(true);
       const response = await axios.post(
-        "https://chatfussion-backend.onrender.com/auth/signup",
+        `${url}/auth/signup`,
         form,
         {
           method: "POST",

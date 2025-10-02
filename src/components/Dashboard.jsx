@@ -4,6 +4,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { useSocketContext } from "../context/socketContext";
 import Chats from "./Chats";
 import profileImg from "../assets/profile.png";
+import {url} from '../utils/api';
 
 import {
   ChatBubbleLeftEllipsisIcon,
@@ -17,6 +18,7 @@ import {
 import { success, errors } from "../utils/tostify";
 
 const Dashboard = () => {
+  console.log(url)
   const [loading, setLoading] = useState(false);
   const [userLoading, setUserLoading] = useState(false);
   const [users, setUsers] = useState([]);
@@ -48,14 +50,46 @@ const Dashboard = () => {
   };
 
   // Handle save
+  const [profileUpdating, setProfileUpdating] = useState(false);
   const handleSaveProfile = async () => {
+    setProfileUpdating(true);
     try {
-      await axios.patch(`https://chatfussion-backend.onrender.com/auth/updateProfile`, editProfile, { withCredentials: true });
-      setUserProfileDetails({ ...editProfile });
+      const formData = new FormData();
+      // Append all fields except profileImg (if it's a base64 string, convert to file)
+      Object.entries(editProfile).forEach(([key, value]) => {
+        if (key === 'profileImg' && value && value.startsWith('data:')) {
+          // Convert base64 to Blob
+          const arr = value.split(',');
+          const mime = arr[0].match(/:(.*?);/)[1];
+          const bstr = atob(arr[1]);
+          let n = bstr.length;
+          const u8arr = new Uint8Array(n);
+          while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+          }
+          const file = new File([u8arr], 'profile.jpg', { type: mime });
+          formData.append('file', file); // Use 'file' as the key
+        } else if (key === 'profileImg' && value && value instanceof File) {
+          formData.append('file', value); // Use 'file' as the key
+        } else if (value !== undefined && value !== null) {
+          formData.append(key, value);
+        }
+      });
+      const res = await axios.patch(`${url}/auth/updateProfile`, formData, {
+        withCredentials: true,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      // Use backend response for updated user (assume res.data.user)
+      const updatedUser = res.data.user || { ...editProfile };
+      setUserProfileDetails(updatedUser);
+      setAuth(updatedUser);
+      localStorage.setItem("chat-user", JSON.stringify(updatedUser));
       setEditMode(false);
       success("Profile updated!");
     } catch (err) {
       errors("Failed to update profile");
+    } finally {
+      setProfileUpdating(false);
     }
   };
 
@@ -79,8 +113,8 @@ const Dashboard = () => {
   const searchUser = async () => {
     if (!searchQuery.trim()) return;
     try {
-      const url = `https://chatfussion-backend.onrender.com/search/user?username=${searchQuery}`;
-      const { data } = await axios.get(url, { withCredentials: true });
+      const urls = `${url}/search/user?username=${searchQuery}`;
+      const { data } = await axios.get(urls, { withCredentials: true });
       setSearchResult(data);
     } catch {
       setSearchResult(null);
@@ -92,7 +126,7 @@ const Dashboard = () => {
     const fetchUsers = async () => {
       try {
         setUserLoading(true);
-        const { data } = await axios.get("https://chatfussion-backend.onrender.com/user/all", {
+        const { data } = await axios.get(`${url}/user/all`, {
           withCredentials: true,
         });
         setUsers(data.user);
@@ -103,13 +137,13 @@ const Dashboard = () => {
       }
     };
     fetchUsers();
-  }, [chatUser]);
+  }, []);
 
   const handleLogout = async () => {
     try {
       setLoading(true);
       const { data } = await axios.post(
-        "https://chatfussion-backend.onrender.com/auth/logout",
+        `${url}/auth/logout`,
        
         { withCredentials: true }
       );
@@ -126,7 +160,7 @@ const Dashboard = () => {
   const handleUserProfile = async (id) => {
     try {
       const userProfile = await axios.get(
-        `https://chatfussion-backend.onrender.com/auth/getUserDetails/${id}`,
+        `${url}/auth/getUserDetails/${id}`,
         { withCredentials: true }
       );
       setUserProfileDetails(userProfile.data.user);
@@ -408,10 +442,17 @@ const Dashboard = () => {
               </div>
               {editMode && (
                 <button
-                  className="mt-6 px-6 py-2 rounded-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold shadow transition duration-150"
+                  className="mt-6 px-6 py-2 rounded-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold shadow transition duration-150 flex items-center justify-center min-w-[90px]"
                   onClick={handleSaveProfile}
+                  disabled={profileUpdating}
                 >
-                  Save
+                  {profileUpdating ? (
+                    <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                  ) : null}
+                  {profileUpdating ? 'Saving...' : 'Save'}
                 </button>
               )}
           </div>

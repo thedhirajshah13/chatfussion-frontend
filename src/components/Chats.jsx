@@ -8,8 +8,10 @@ import { useAuthContext } from "../context/AuthContext";
 import profileImg from "../assets/profile.png";
 import { useSocketContext } from "../context/socketContext";
 import useListenMessage from "../socketHooks";
+import {url} from '../utils/api';
 
 const Chats = ({ chatUserDetails }) => {
+  console.log(url);
   const [isSending, setIsSending] = useState(false);
   const { chatUserId, profile, name } = chatUserDetails;
   const { auth } = useAuthContext();
@@ -29,8 +31,8 @@ const Chats = ({ chatUserDetails }) => {
 
     async function getConversation() {
       try {
-        const url = `https://chatfussion-backend.onrender.com/${chatUserId}`;
-        const response = await axios.get(url, {
+        const urls = `${url}/${chatUserId}`;
+        const response = await axios.get(urls, {
           method: "GET",
           withCredentials: true,
         });
@@ -78,8 +80,8 @@ const Chats = ({ chatUserDetails }) => {
     if (media) formData.append("media", media);
 
     try {
-      const url = `https://chatfussion-backend.onrender.com/sendmessage/${chatUserId}`;
-      const response = await axios.post(url, formData, {
+      const urls = `${url}/sendmessage/${chatUserId}`;
+      const response = await axios.post(urls, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
